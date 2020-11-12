@@ -26,7 +26,8 @@ export class UsersService {
   }
 
   async login(user: LoginUserDto): Promise<{ token: string }> {
-    return { token: user.email };
+    return;
+    //return { token: user.email };
   }
 
   findAll() {

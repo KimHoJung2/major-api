@@ -1,12 +1,16 @@
-import { Controller, Get, Post, Body, Param, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthService } from 'src/auth/auth.service';
 
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private authService: AuthService,
+  ) {}
 
   @Post()
   async create(@Body() createUser: CreateUserDto) {
@@ -14,8 +18,8 @@ export class UsersController {
   }
 
   @Post('login')
-  async login(@Param() user: LoginUserDto) {
-    return this.usersService.login(user);
+  async login(@Body() user: LoginUserDto) {
+    return this.authService.validateUser(user.email, user.password);
   }
 
   @Get()
