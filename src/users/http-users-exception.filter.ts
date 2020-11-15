@@ -1,26 +1,29 @@
 import {
   ExceptionFilter,
+  HttpException,
   Catch,
   ArgumentsHost,
-  HttpStatus,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { CustomError } from './dto/create-users.dto';
+import { Response } from 'express';
+import { CustomError } from 'responseError/customError';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
     const customError = exception as CustomError;
+    const status =
+      exception instanceof HttpException
+        ? exception.getStatus()
+        : customError.response.status;
 
-    response.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      message: customError.message,
-      code: customError.code,
-      timestamp: new Date().toISOString(),
-      path: request.url,
-    });
+    response
+      .status(status)
+      .json(
+        exception instanceof HttpException
+          ? exception.getResponse()
+          : customError.response,
+      );
   }
 }

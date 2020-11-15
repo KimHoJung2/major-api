@@ -1,7 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { CreateUserDto, CustomError } from './dto/create-users.dto';
+import { CreateUserDto } from './dto/create-users.dto';
+import { CustomError } from 'responseError/customError';
 import { User } from './schema/users.interface';
+import { overlapEmail } from './usersError/error';
 
 @Injectable()
 export class UsersService {
@@ -10,11 +12,14 @@ export class UsersService {
     private userModel: Model<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const createUser = new this.userModel(createUserDto);
+  async create(createUserDto: CreateUserDto): Promise<User | undefined> {
+    const createUser = new this.userModel({
+      ...createUserDto,
+      created: new Date(),
+    });
     return this.findOne(createUserDto.email).then((res) => {
       if (res) {
-        throw new CustomError(200, '이미있는 아이디다', 'AC800');
+        throw new CustomError(overlapEmail);
       }
       return createUser.save();
     });

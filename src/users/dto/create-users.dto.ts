@@ -13,21 +13,4 @@ export class CreateUserDto {
   @ApiProperty()
   @IsNotEmpty()
   password: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  sex: string;
-}
-
-export class CustomError extends Error {
-  code: string;
-  status: number;
-  message: string;
-
-  constructor(status: number, message: string, code: string) {
-    super();
-    this.status = status;
-    this.message = message;
-    this.code = code;
-  }
 }
