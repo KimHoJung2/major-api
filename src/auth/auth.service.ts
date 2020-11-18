@@ -1,21 +1,15 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UsersService } from 'users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from 'users/dto/login-user.dto';
 import { CustomError } from 'responseError/customError';
-import { emailError, passwordError } from './authError/error';
-import { Model } from 'mongoose';
-import { Token } from './schema/auth.interface';
-import { TokenDto } from './dto/create-token.dto';
+import { loginError } from './authError/error';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UsersService,
     private jwtService: JwtService,
-
-    @Inject('TOKEN_MODEL')
-    private tokenModel: Model<Token>,
   ) {}
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -29,31 +23,21 @@ export class AuthService {
       };
     }
 
-    if (!user) {
-      return emailError;
-    }
-
-    return passwordError;
+    return loginError;
   }
+
+  // TODO: 로그인이 한군데로 고정 하고싶다. ex) 로그인시에 디비에 데이터있을시 업뎃 해당유저의 아이디와 토큰을 db에 저장하고  api 미들웨어에서 해당 유저의 id와 토큰으로 2중 검사(토큰db userdb 같이 조회).
+  // 로그아웃시 db에서 해당 토큰 제거xe
+  // TODO: 비밀번호 오류 5번 계정비활성화 or 추가인증. 오류카운팅 ++
 
   async login(user: LoginUserDto) {
     const payload = { email: user.email };
-    return this.validateUser(user.email, user.password).then((res) => {
+    return this.validateUser(user.email, user.password).then(async (res) => {
       if (res.status) {
         throw new CustomError(res);
       }
-      const id = res.id;
-      return this.craeteToken({
-        userId: id,
-        access_token: this.jwtService.sign({ ...payload, id: id }),
-        ttl: 86400000,
-        created: new Date(),
-      });
-    });
-  }
 
-  async craeteToken(token: TokenDto) {
-    const createToken = new this.tokenModel(token);
-    return createToken.save();
+      return { access_token: this.jwtService.sign({ ...payload, id: res.id }) };
+    });
   }
 }

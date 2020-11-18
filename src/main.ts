@@ -15,9 +15,13 @@ async function bootstrap() {
     .setTitle('Major')
     .setDescription('The major API description')
     .setVersion('1.0')
-    .addBearerAuth(
-      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-      'access-token',
+    .addApiKey(
+      {
+        type: 'apiKey', // this should be apiKey
+        name: 'access-token', // this is the name of the key you expect in header
+        in: 'header',
+      },
+      'access-token', // this is the name to show and used in swagger
     )
     .build();
   const document = SwaggerModule.createDocument(app, options);

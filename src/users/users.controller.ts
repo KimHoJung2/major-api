@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'auth/auth.service';
 import { JwtAuthGuard } from 'auth/guard/jwt-auth.guard';
@@ -8,6 +8,8 @@ import { UsersService } from './users.service';
 
 @Controller('user')
 @ApiTags('user')
+@ApiSecurity('access-token')
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(
     private usersService: UsersService,
@@ -16,19 +18,16 @@ export class UsersController {
 
   @Post()
   async create(@Body() createUsersDto: CreateUserDto) {
-    //console.log(createUsersDto);
     return this.usersService.create(createUsersDto);
   }
 
-  //@UseGuards(LocalAuthGuard)
   @Post('/login')
   async login(@Body() loginUserDto: LoginUserDto) {
     return this.authService.login(loginUserDto);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('/abc')
-  async abc(@Body() aaa: string) {
-    return 'aaa';
+  @Post('/logout')
+  async logout(@Request() req: any) {
+    return 'aaaaa';
   }
 }
