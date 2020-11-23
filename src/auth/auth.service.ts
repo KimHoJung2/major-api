@@ -4,6 +4,8 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from 'users/dto/login-user.dto';
 import { CustomError } from 'responseError/customError';
 import { loginError } from './authError/error';
+import { compare } from 'bcrypt';
+import { GetUserProfileDto } from 'users/dto/get-users-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +16,7 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userService.findOne(email);
-    if (user && user.password === password) {
+    if (user && (await this.compareHash(password, user.password))) {
       const { email, username, id } = user;
       return {
         email: email,
@@ -37,7 +39,21 @@ export class AuthService {
         throw new CustomError(res);
       }
 
-      return { access_token: this.jwtService.sign({ ...payload, id: res.id }) };
+      return {
+        access_token: this.jwtService.sign({ ...payload }),
+        expires: 86400000,
+      };
     });
+  }
+
+  async tokenValidator(getUserProfileDto: GetUserProfileDto) {
+    return this.jwtService.decode(getUserProfileDto.token);
+  }
+
+  async compareHash(
+    password: string,
+    hash: string | undefined,
+  ): Promise<boolean> {
+    return compare(password, hash);
   }
 }

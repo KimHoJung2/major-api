@@ -1,15 +1,22 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'auth/auth.service';
 import { JwtAuthGuard } from 'auth/guard/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-users.dto';
+import { GetUserProfileDto } from './dto/get-users-profile.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { UsersService } from './users.service';
 
 @Controller('user')
 @ApiTags('user')
 @ApiSecurity('access-token')
-@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(
     private usersService: UsersService,
@@ -27,7 +34,15 @@ export class UsersController {
   }
 
   @Post('/logout')
+  @UseGuards(JwtAuthGuard)
   async logout(@Request() req: any) {
     return 'aaaaa';
+  }
+
+  @Get('/profile')
+  @UseGuards(JwtAuthGuard)
+  async getUserProfile(@Request() a: any) {
+    return 'asdfsaf';
+    //return this.usersService.findById(getUserProfileDto.id);
   }
 }

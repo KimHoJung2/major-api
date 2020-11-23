@@ -2,10 +2,10 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { CommonModule } from 'common.module';
-import { HttpExceptionFilter } from './users/http-users-exception.filter';
+import { HttpExceptionFilter } from './responseError/http-users-exception.filter';
 
 async function bootstrap() {
-  const app = await NestFactory.create(CommonModule);
+  const app = await NestFactory.create(CommonModule, { cors: true });
 
   app.useGlobalPipes(new ValidationPipe());
 
