@@ -10,7 +10,6 @@ export class ScoreBoardService {
   ) {}
 
   async find(skip: number) {
-    console.log(skip);
     return await this.scoreBoardModel
       .find()
       .sort({ key: -1 })

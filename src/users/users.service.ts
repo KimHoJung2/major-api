@@ -33,4 +33,8 @@ export class UsersService {
     console.log(id);
     return this.userModel.findById(id);
   }
+
+  async getUserProFile(email: string): Promise<User> {
+    return this.findOne(email);
+  }
 }

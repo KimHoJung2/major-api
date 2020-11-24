@@ -17,11 +17,13 @@ export class AuthService {
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userService.findOne(email);
     if (user && (await this.compareHash(password, user.password))) {
-      const { email, username, id } = user;
+      const { email, username, id, usertype } = user;
+      console.log('user: ', user);
       return {
         email: email,
         id: id,
         username: username,
+        usertype: usertype,
       };
     }
 
@@ -38,9 +40,10 @@ export class AuthService {
       if (res.status) {
         throw new CustomError(res);
       }
-
+      console.log('res: ', res);
       return {
         access_token: this.jwtService.sign({ ...payload }),
+        usertype: res.usertype,
         expires: 86400000,
       };
     });

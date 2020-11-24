@@ -2,7 +2,9 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -10,7 +12,6 @@ import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'auth/auth.service';
 import { JwtAuthGuard } from 'auth/guard/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-users.dto';
-import { GetUserProfileDto } from './dto/get-users-profile.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { UsersService } from './users.service';
 
@@ -41,8 +42,11 @@ export class UsersController {
 
   @Get('/profile')
   @UseGuards(JwtAuthGuard)
-  async getUserProfile(@Request() a: any) {
-    return 'asdfsaf';
+  async getUserProfile(@Query() params: { token: string }) {
+    const email = await this.authService.tokenValidator(params);
+
+    return this.usersService.getUserProFile(email['email']);
+    // return this.usersService.findOne(this.jwtService.decode());
     //return this.usersService.findById(getUserProfileDto.id);
   }
 }

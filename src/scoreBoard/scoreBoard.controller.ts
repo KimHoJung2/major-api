@@ -1,5 +1,5 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
-import { ApiParam, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'auth/guard/jwt-auth.guard';
 import { GetScoreBoardDto } from './dto/get-board-dto';
 import { ScoreBoardService } from './scoreBoard.service';
@@ -13,7 +13,6 @@ export class ScoreBoardController {
 
   @Get()
   async getScoreBoard(@Query() getScoreBoardDto: GetScoreBoardDto) {
-    console.log(getScoreBoardDto.skip);
     return this.scoreBoardService.find(parseInt(getScoreBoardDto.skip));
   }
 }
