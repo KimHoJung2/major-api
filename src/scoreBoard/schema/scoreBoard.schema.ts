@@ -6,8 +6,8 @@ export const ScoreBoardSchema = new mongoose.Schema(
     created: Date,
     name: String,
     close: Boolean,
+    text: String,
     key: Number,
-    boardId: mongoose.Schema.Types.ObjectId,
   },
   {
     versionKey: false,

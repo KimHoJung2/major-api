@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  Param,
   Post,
   Query,
   Request,
@@ -11,6 +10,7 @@ import {
 import { ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'auth/auth.service';
 import { JwtAuthGuard } from 'auth/guard/jwt-auth.guard';
+import { AttendUserDto } from './dto/attend-user.dto';
 import { CreateUserDto } from './dto/create-users.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { UsersService } from './users.service';
@@ -31,7 +31,22 @@ export class UsersController {
 
   @Post('/login')
   async login(@Body() loginUserDto: LoginUserDto) {
-    return this.authService.login(loginUserDto);
+    return await this.authService.login(loginUserDto);
+  }
+
+  @Get('/attend')
+  async getAttendUser(@Query() params: { boardId: string }) {
+    return this.usersService.findAttendUser(params.boardId);
+  }
+
+  @Post('/attend')
+  async postAttendUser(@Body() attendUserDto: AttendUserDto) {
+    return this.usersService.postAttendUser(attendUserDto);
+  }
+
+  @Post('/attend/delete')
+  async postDeleteAttendUser(@Body() attendUserDto: AttendUserDto) {
+    return this.usersService.postDeleteAttendUser(attendUserDto);
   }
 
   @Post('/logout')

@@ -5,6 +5,6 @@ export interface ScoreBoard extends Document {
   created: Date;
   name: string;
   close: boolean;
+  text: string;
   key: number;
-  boardId: mongoose.Schema.Types.ObjectId;
 }

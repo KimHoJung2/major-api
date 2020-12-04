@@ -16,9 +16,9 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.userService.findOne(email);
+
     if (user && (await this.compareHash(password, user.password))) {
       const { email, username, id, usertype } = user;
-      console.log('user: ', user);
       return {
         email: email,
         id: id,
@@ -36,14 +36,17 @@ export class AuthService {
 
   async login(user: LoginUserDto) {
     const payload = { email: user.email };
+
     return this.validateUser(user.email, user.password).then(async (res) => {
       if (res.status) {
         throw new CustomError(res);
       }
-      console.log('res: ', res);
+
       return {
         access_token: this.jwtService.sign({ ...payload }),
         usertype: res.usertype,
+        username: res.username,
+        userId: res.id,
         expires: 86400000,
       };
     });
